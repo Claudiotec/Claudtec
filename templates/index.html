@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>COMPLEXO ESCOLAR TECNOLOGIA E INOVAÇÃO</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
+
+/* Container principal */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    gap: 20px;
+}
+
+/* Chatbot à esquerda */
+#chatbot-box {
+    flex: 1 1 350px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    max-height: 600px;
+    overflow-y: auto;
+}
+#chatbot-box h2 { margin-top: 0; font-size: 18px; color: #2c3e50; }
+#chatbot-box input, #chatbot-box textarea, #chatbot-box button {
+    width: 100%; margin: 5px 0; padding: 8px;
+    border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;
+}
+#chatbot-box button {
+    background: #3498db; color: white; border: none; cursor: pointer;
+}
+#chatbot-box button:hover { background: #2980b9; }
+.resposta-automatica { margin-top: 10px; padding: 8px; background: #ecf0f1; border-radius: 8px; font-size: 14px; color: #2c3e50; }
+
+/* Coluna arquivos à direita */
+.col-arquivos {
+    flex: 1 1 600px;
+}
+.box {
+    background: white; padding: 20px; border-radius: 12px; 
+    box-shadow: 0 0 12px rgba(0,0,0,0.1); margin-bottom: 20px;
+}
+.box ul { list-style: none; padding: 0; }
+.box li { padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee; }
+.preview-img, .preview-pdf { width: 100%; max-height: 200px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; }
+.preview-pdf iframe { width: 100%; height: 200px; border-radius: 8px; }
+
+/* Notificação */
+.notificacao {
+    position: fixed; top: 20px; right: 20px;
+    background: #4caf50; color: white; padding: 10px 20px;
+    border-radius: 6px; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+</style>
+</head>
+<body>
+
+<h1>📁 COMPLEXO ESCOLAR TECNOLOGIA E INOVAÇÃO</h1>
+
+<div class="container">
+    <!-- Chatbot -->
+    <div id="chatbot-box">
+        <h2>🤖 CLAUDBOT</h2>
+        <form method="post" id="form-chatbot">
+            <input type="text" name="mensagem" placeholder="Faça uma pergunta..." required>
+            <button type="submit">🔍 Perguntar</button>
+        </form>
+        <div style="margin-top:10px; font-weight:bold;">{{ resposta }}</div>
+
+        <hr>
+        <h2>📤 Enviar Arquivo</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data" id="form-upload">
+            <input type="text" name="nome" placeholder="Seu nome" required>
+            <input type="text" name="contacto" placeholder="Seu contacto" required>
+            <textarea name="comentario" placeholder="Comentário"></textarea>
+            <input type="file" name="arquivo" required>
+            <button type="submit">📥 Enviar</button>
+        </form>
+
+        <hr>
+        <h2>📢 Reclamação/Sugestão</h2>
+        <form action="/feedback" method="post" id="form-feedback">
+            <input type="text" name="encarregado" placeholder="Nome do Encarregado" required>
+            <input type="text" name="aluno" placeholder="Nome do Aluno" required>
+            <input type="text" name="contacto" placeholder="Contacto" required>
+            <textarea name="mensagem" rows="3" placeholder="Digite sua mensagem..." required></textarea>
+            <button type="submit">📤 Enviar</button>
+        </form>
+        <div id="resposta-feedback" class="resposta-automatica"></div>
+    </div>
+
+    <!-- Arquivos -->
+    <div class="col-arquivos">
+        <div class="box">
+            <h2>📂 Arquivos Disponíveis</h2>
+            <ul>
+            {% for arquivo in arquivos %}
+                <li>
+                    {{ arquivo }} [<a href="{{ url_for('download', nome_arquivo=arquivo) }}">baixar</a>]
+                    <div>
+                    {% set ext = arquivo.split('.')[-1].lower() %}
+                    {% if ext in ['jpg','jpeg','png','gif'] %}
+                        <img src="/arquivos/{{ arquivo }}" class="preview-img">
+                    {% elif ext == 'pdf' %}
+                        <iframe src="/arquivos/{{ arquivo }}" class="preview-pdf"></iframe>
+                    {% else %}
+                        <p>Preview não disponível.</p>
+                    {% endif %}
+                    </div>
+                </li>
+            {% else %}
+                <li>Nenhum arquivo disponível</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="notificacao" id="notificacao">✅ Nova mensagem ou arquivo recebido!</div>
+
+<script>
+// Mostra notificação temporária
+function mostrarNotificacao(msg) {
+    const notif = document.getElementById("notificacao");
+    notif.innerText = msg;
+    notif.style.display = "block";
+    setTimeout(() => { notif.style.display = "none"; }, 5000);
+}
+
+// Captura envio de formulário e mostra notificação
+document.getElementById('form-upload').addEventListener('submit', () => {
+    mostrarNotificacao('📥 Arquivo enviado com sucesso!');
+});
+document.getElementById('form-feedback').addEventListener('submit', () => {
+    mostrarNotificacao('📢 Feedback enviado com sucesso!');
+});
+document.getElementById('form-chatbot').addEventListener('submit', () => {
+    mostrarNotificacao('🤖 Pergunta enviada ao chatbot!');
+});
+</script>
+
+</body>
+</html>
