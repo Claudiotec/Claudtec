@@ -1,6 +1,6 @@
 @echo off
 REM ==== CONFIGURAÇÕES ====
-set REPO_URL=https://github.com/Claudiotec/claudtectecnologia.git
+set REPO_URL=https://https://github.com/Claudiotec/claudtectecnologia
 set MENSAGEM=Atualização automática
 
 REM ==== IR PARA A PASTA DO PROJETO ====
