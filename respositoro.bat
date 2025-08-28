@@ -1,29 +1,33 @@
 @echo off
-echo ================================
-echo 🚀 Subindo projeto pro GitHub...
-echo ================================
+echo ============================
+echo 🚀 Inicializando Repositorio
+echo ============================
 
-:: CONFIGURA NOME E EMAIL
-git config --global user.name "Claudiotec"
-git config --global user.email "teuemail@exemplo.com"
+REM Cria README.md se nao existir
+if not exist README.md (
+    echo # casteloreis > README.md
+)
 
-:: INICIALIZA O REPO
+REM Inicializa Git
 git init
 
-:: ADICIONA ARQUIVOS
+REM Adiciona arquivos
 git add .
 
-:: FAZ O COMMIT
+REM Faz o commit inicial
 git commit -m "primeiro commit"
 
-:: GARANTE QUE ESTA NA BRANCH MAIN
+REM Define branch principal como main
 git branch -M main
 
-:: ADICIONA O REMOTO (só se não existir ainda)
+REM Adiciona remote origin
 git remote remove origin 2>nul
-git remote add origin https://github.com/Claudiotec/redirect-flask.git
+git remote add origin https://github.com/Claudiotec/casteloreis.git
 
-:: ENVIA PARA O GITHUB
+REM Faz o push para o GitHub
 git push -u origin main
 
+echo ============================
+echo ✅ Concluido!
+echo ============================
 pause
