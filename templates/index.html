@@ -37,7 +37,11 @@ h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
     background: #3498db; color: white; border: none; cursor: pointer;
 }
 #chatbot-box button:hover { background: #2980b9; }
-.resposta-automatica { margin-top: 10px; padding: 8px; background: #ecf0f1; border-radius: 8px; font-size: 14px; color: #2c3e50; }
+.resposta-automatica { 
+    margin-top: 10px; padding: 8px; background: #ecf0f1; 
+    border-radius: 8px; font-size: 14px; color: #2c3e50; 
+    white-space: pre-line; /* Para manter as quebras de linha */
+}
 
 /* Coluna arquivos à direita */
 .col-arquivos {
@@ -49,7 +53,11 @@ h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
 }
 .box ul { list-style: none; padding: 0; }
 .box li { padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee; }
-.preview-img, .preview-pdf { width: 100%; max-height: 200px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; }
+.preview-img, .preview-pdf { 
+    width: 100%; max-height: 200px; margin-top: 5px; 
+    border-radius: 8px; border: 1px solid #ccc; 
+    object-fit: contain; /* Para manter a proporção da imagem */
+}
 .preview-pdf iframe { width: 100%; height: 200px; border-radius: 8px; }
 
 /* Notificação */
@@ -59,6 +67,26 @@ h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
     border-radius: 6px; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.2);
     z-index: 1000;
 }
+
+/* Botões de administração */
+.admin-buttons {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+.admin-buttons h3 { margin-top: 0; }
+.admin-buttons a {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 15px;
+    background: #17a2b8;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+.admin-buttons a:hover { background: #138496; }
 </style>
 </head>
 <body>
@@ -73,7 +101,10 @@ h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
             <input type="text" name="mensagem" placeholder="Faça uma pergunta..." required>
             <button type="submit">🔍 Perguntar</button>
         </form>
-        <div style="margin-top:10px; font-weight:bold;">{{ resposta }}</div>
+        
+        {% if resposta %}
+        <div class="resposta-automatica">{{ resposta }}</div>
+        {% endif %}
 
         <hr>
         <h2>📤 Enviar Arquivo</h2>
@@ -94,7 +125,17 @@ h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
             <textarea name="mensagem" rows="3" placeholder="Digite sua mensagem..." required></textarea>
             <button type="submit">📤 Enviar</button>
         </form>
-        <div id="resposta-feedback" class="resposta-automatica"></div>
+        
+        <!-- Área de administração -->
+        <div class="admin-buttons">
+            <h3>🔧 Administração</h3>
+            <a href="/upload_arquivos">Upload de Arquivos</a>
+            <a href="/exportar/conversas">Exportar Conversas</a>
+            <a href="/exportar/envios">Exportar Envios</a>
+            <a href="/exportar/feedback">Exportar Feedback</a>
+            <a href="/baixar_recebidos">Baixar Arquivos Recebidos</a>
+            <a href="/login_dados">Visualizar Dados Recebidos</a>
+        </div>
     </div>
 
     <!-- Arquivos -->
@@ -107,12 +148,12 @@ h1 { text-align: center; color: #2c3e50; margin-top: 20px; }
                     {{ arquivo }} [<a href="{{ url_for('download', nome_arquivo=arquivo) }}">baixar</a>]
                     <div>
                     {% set ext = arquivo.split('.')[-1].lower() %}
-                    {% if ext in ['jpg','jpeg','png','gif'] %}
-                        <img src="/arquivos/{{ arquivo }}" class="preview-img">
+                    {% if ext in ['jpg','jpeg','png','gif','bmp','webp'] %}
+                        <img src="{{ url_for('visualizar_arquivo', nome_arquivo=arquivo) }}" class="preview-img" onerror="this.style.display='none'">
                     {% elif ext == 'pdf' %}
-                        <iframe src="/arquivos/{{ arquivo }}" class="preview-pdf"></iframe>
+                        <iframe src="{{ url_for('visualizar_arquivo', nome_arquivo=arquivo) }}" class="preview-pdf" onerror="this.style.display='none'"></iframe>
                     {% else %}
-                        <p>Preview não disponível.</p>
+                        <p>Preview não disponível para este tipo de arquivo.</p>
                     {% endif %}
                     </div>
                 </li>
